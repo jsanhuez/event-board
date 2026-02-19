@@ -1,0 +1,48 @@
+# Event Board Users Subgraph NestJS Application
+
+NestJS application serving as Apollo Federation subgraph for Users domain.
+
+## Features
+- GraphQL Apollo Federation subgraph
+- MongoDB integration with Mongoose
+- User registration and authentication
+- JWT token generation (access and refresh tokens)
+- Password hashing with bcryptjs
+- User management (create, update, read)
+- Full schema federation support
+
+## Data Model
+```typescript
+User {
+  _id: ObjectId
+  email: String (unique)
+  name: String
+  password: String (hashed)
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+## Authentication
+- Access tokens expire after 1 hour
+- Refresh tokens expire after 7 days
+- Passwords hashed with bcryptjs (10 salt rounds)
+
+## Environment Variables
+See `.env.example` for complete list.
+
+##Running
+```bash
+pnpm dev    # Development mode with hot reload
+pnpm build  # Build TypeScript
+pnpm start  # Start production build
+```
+
+## GraphQL Playground
+Navigate to http://localhost:4002/graphql to test queries and mutations.
+
+## Key Operations
+- `mutation register` - Register new user, returns JWT tokens
+- `mutation login` - Login user, returns JWT tokens
+- `query user(id)` - Get user by ID
+- `mutation updateUser` - Update user profile
