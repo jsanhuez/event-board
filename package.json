@@ -1,0 +1,17 @@
+{
+  "name": "event-board",
+  "version": "1.0.0",
+  "description": "Event Board - Intern Events Management System",
+  "private": true,
+  "scripts": {
+    "dev": "docker-compose -f docker-compose.yml up",
+    "dev:build": "docker-compose -f docker-compose.yml up --build",
+    "down": "docker-compose -f docker-compose.yml down",
+    "logs": "docker-compose -f docker-compose.yml logs -f",
+    "lint": "pnpm -r run lint",
+    "type-check": "pnpm -r run type-check"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

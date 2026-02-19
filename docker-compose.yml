@@ -1,0 +1,139 @@
+version: "3.9"
+
+services:
+  # Database
+  mongodb:
+    image: mongo:7.0.5
+    container_name: event-board-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/init-mongodb.js:/docker-entrypoint-initdb.d/init-mongodb.js:ro
+    networks:
+      - event-board-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Services
+  eb-api-gateway:
+    build:
+      context: .
+      dockerfile: packages/backend/eb-api-gateway/Dockerfile
+    container_name: event-board-api-gateway
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      MONGODB_URI: mongodb://root:password@mongodb:27017?authSource=admin
+      EVENTS_SUBGRAPH_URL: http://eb-api-events:4001/graphql
+      USERS_SUBGRAPH_URL: http://eb-api-users:4002/graphql
+      JWT_SECRET: your-secret-key-change-in-production
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      eb-api-events:
+        condition: service_started
+      eb-api-users:
+        condition: service_started
+    networks:
+      - event-board-network
+
+  eb-api-events:
+    build:
+      context: .
+      dockerfile: packages/backend/eb-api-events/Dockerfile
+    container_name: event-board-api-events
+    ports:
+      - "4001:4001"
+    environment:
+      NODE_ENV: development
+      PORT: 4001
+      MONGODB_URI: mongodb://root:password@mongodb:27017/eb_events?authSource=admin
+      APOLLO_GATEWAY_URL: http://eb-api-gateway:4000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - event-board-network
+
+  eb-api-users:
+    build:
+      context: .
+      dockerfile: packages/backend/eb-api-users/Dockerfile
+    container_name: event-board-api-users
+    ports:
+      - "4002:4002"
+    environment:
+      NODE_ENV: development
+      PORT: 4002
+      MONGODB_URI: mongodb://root:password@mongodb:27017/eb_users?authSource=admin
+      JWT_SECRET: your-secret-key-change-in-production
+      APOLLO_GATEWAY_URL: http://eb-api-gateway:4000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - event-board-network
+
+  # Frontend Services
+  eb-web-app:
+    build:
+      context: .
+      dockerfile: packages/frontend/eb-web-app/Dockerfile
+    container_name: event-board-web-app
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_GATEWAY_URL: http://localhost:4000/graphql
+      REACT_APP_EVENTS_REMOTE_URL: http://localhost:3001
+      REACT_APP_USERS_REMOTE_URL: http://localhost:3002
+    depends_on:
+      - eb-api-gateway
+    networks:
+      - event-board-network
+
+  eb-web-app-events:
+    build:
+      context: .
+      dockerfile: packages/frontend/eb-web-app-events/Dockerfile
+    container_name: event-board-web-app-events
+    ports:
+      - "3001:3001"
+    environment:
+      REACT_APP_API_GATEWAY_URL: http://localhost:4000/graphql
+      PORT: 3001
+    depends_on:
+      - eb-api-gateway
+    networks:
+      - event-board-network
+
+  eb-web-app-users:
+    build:
+      context: .
+      dockerfile: packages/frontend/eb-web-app-users/Dockerfile
+    container_name: event-board-web-app-users
+    ports:
+      - "3002:3002"
+    environment:
+      REACT_APP_API_GATEWAY_URL: http://localhost:4000/graphql
+      PORT: 3002
+    depends_on:
+      - eb-api-gateway
+    networks:
+      - event-board-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  event-board-network:
+    driver: bridge
