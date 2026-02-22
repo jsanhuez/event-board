@@ -1,10 +1,11 @@
-const { ModuleFederationPlugin } = require('@module-federation/enhanced/webpack');
+// use webpack's built-in federation plugin to avoid dts-worker errors
+const { container: { ModuleFederationPlugin } } = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isDevelopment = argv.mode === 'development';
-  
+
   return {
     entry: './src/index.tsx',
     devtool: isDevelopment ? 'inline-source-map' : 'source-map',
@@ -14,12 +15,12 @@ module.exports = (env, argv) => {
       chunkFilename: '[name].[contenthash].js',
       publicPath: 'auto',
     },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json'],
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.json'],
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
     },
-  },
     devServer: {
       port: 3001,
       historyApiFallback: true,
@@ -46,31 +47,37 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
-    new ModuleFederationPlugin({
-      name: 'ebWebAppEvents',
-      filename: 'remoteEntry.js',
-      exposes: {
-        './EventsApp': './src/EventsApp.tsx',
-      },
-      enableTypescriptFederation: false,
-      shared: {
-        react: {
-          singleton: true,
-          requiredVersion: false,
-          eager: true,
+      // load .env files into webpack build
+      // new (require('dotenv-webpack'))({
+      //   path: path.resolve(__dirname, '.env'),
+      //   safe: true, // load '.env.example' to verify the '.env' variables are all set
+      //   systemvars: true, // also load system environment variables
+      //   silent: true, // hide warnings
+      // }),
+      new ModuleFederationPlugin({
+        name: 'ebWebAppEvents',
+        filename: 'remoteEntry.js',
+        exposes: {
+          './EventsApp': './src/EventsApp.tsx',
         },
-        'react-dom': {
-          singleton: true,
-          requiredVersion: false,
-          eager: true,
+        shared: {
+          react: {
+            singleton: true,
+            requiredVersion: false,
+            eager: true,
+          },
+          'react-dom': {
+            singleton: true,
+            requiredVersion: false,
+            eager: true,
+          },
+          '@mui/material': {
+            singleton: true,
+            requiredVersion: false,
+            eager: true,
+          },
         },
-        '@mui/material': {
-          singleton: true,
-          requiredVersion: false,
-          eager: true,
-        },
-      },
-    }),
+      }),
       new HtmlWebpackPlugin({
         template: './public/index.html',
         favicon: './public/favicon.ico',
