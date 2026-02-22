@@ -39,8 +39,6 @@ const theme = createTheme({
   },
 });
 
-
-
 export default function App() {
   const [token, setToken] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);

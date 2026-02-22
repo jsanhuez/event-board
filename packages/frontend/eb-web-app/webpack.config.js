@@ -1,5 +1,7 @@
-const { ModuleFederationPlugin } = require('@module-federation/enhanced/webpack');
+// using webpack's built-in ModuleFederationPlugin instead of enhanced
+const { container: { ModuleFederationPlugin } } = require('webpack');
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
@@ -46,6 +48,16 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
+      new webpack.DefinePlugin({
+        'process.env.REACT_APP_API_GATEWAY_URL': JSON.stringify(process.env.REACT_APP_API_GATEWAY_URL),
+      }),
+      // load .env files into webpack build
+      // new (require('dotenv-webpack'))({
+      //   path: path.resolve(__dirname, '.env'),
+      //   safe: true, // load '.env.example' to verify the '.env' variables are all set
+      //   systemvars: true, // also load system environment variables
+      //   silent: true, // hide warnings
+      // }),
       new ModuleFederationPlugin({
         name: 'ebWebApp',
         filename: 'remoteEntry.js',
