@@ -45,4 +45,65 @@ Navigate to http://localhost:4002/graphql to test queries and mutations.
 - `mutation register` - Register new user, returns JWT tokens
 - `mutation login` - Login user, returns JWT tokens
 - `query user(id)` - Get user by ID
-- `mutation updateUser` - Update user profile
+- `mutation updateUser` - Update user profile (requires authentication)
+
+## Mutation Examples
+
+### Register User (Public)
+```graphql
+mutation {
+  register(input: {
+    email: "user@example.com"
+    name: "John Doe"
+    password: "securepassword123"
+  }) {
+    accessToken
+    refreshToken
+    user {
+      _id
+      email
+      name
+      createdAt
+    }
+  }
+}
+```
+
+### Login User (Public)
+```graphql
+mutation {
+  login(input: {
+    email: "user@example.com"
+    password: "securepassword123"
+  }) {
+    accessToken
+    refreshToken
+    user {
+      _id
+      email
+      name
+    }
+  }
+}
+```
+
+### Update User Profile (Requires Auth)
+```graphql
+mutation {
+  updateUser(input: {
+    id: "699a4377f8fc201670baa7dd"
+    name: "Jane Doe"
+    email: "newemail@example.com"
+  }) {
+    _id
+    email
+    name
+    updatedAt
+  }
+}
+```
+
+**Note:** For updateUser, include HTTP Header:
+```
+Authorization: Bearer <jwt_token>
+```
