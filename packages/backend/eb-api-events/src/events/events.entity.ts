@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import { ObjectType, Field, ID, registerEnumType } from "@nestjs/graphql";
 
 export enum EventCategory {
@@ -26,6 +26,9 @@ registerEnumType(EventStatus, {
 @ObjectType()
 @Schema()
 export class Event extends Document {
+  @Field(() => ID)
+  _id!: Types.ObjectId;
+
   @Field()
   @Prop({ required: true })
   title!: string;

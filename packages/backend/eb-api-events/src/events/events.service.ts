@@ -38,11 +38,10 @@ export class EventsService {
   }
 
   async update(id: string, updateEventInput: UpdateEventInput): Promise<Event> {
-    const { id: _, ...updateData } = updateEventInput;
     return this.eventModel
       .findByIdAndUpdate(
         id,
-        { ...updateData, updatedAt: new Date() },
+        { ...updateEventInput, updatedAt: new Date() },
         { new: true },
       )
       .exec() as Promise<Event>;

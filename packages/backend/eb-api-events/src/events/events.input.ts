@@ -1,7 +1,7 @@
-import { IsString, IsDate, IsEnum, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
-import { InputType, Field } from '@nestjs/graphql';
-import { EventCategory, EventStatus } from './events.entity';
+import { IsString, IsDate, IsEnum, IsOptional } from "class-validator";
+import { Type } from "class-transformer";
+import { InputType, Field } from "@nestjs/graphql";
+import { EventCategory, EventStatus } from "./events.entity";
 
 @InputType()
 export class CreateEventInput {
@@ -38,9 +38,6 @@ export class CreateEventInput {
 
 @InputType()
 export class UpdateEventInput {
-  @Field(() => String)
-  id!: string;
-
   @Field({ nullable: true })
   @IsString()
   @IsOptional()
