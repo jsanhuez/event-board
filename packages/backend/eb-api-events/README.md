@@ -42,6 +42,86 @@ Navigate to http://localhost:4001/graphql to test queries and mutations.
 ## Key Operations
 - `query events` - List all events with optional filters
 - `query event(id)` - Get single event by ID
-- `mutation createEvent` - Create new event (requires auth)
-- `mutation updateEvent` - Update existing event (requires auth)
-- `mutation deleteEvent` - Delete event (requires auth)
+- `mutation createEvent` - Create new event (requires authentication)
+- `mutation updateEvent` - Update existing event (requires authentication)
+- `mutation deleteEvent` - Delete event (requires authentication)
+
+## Authentication
+All mutations require a valid JWT token passed via the Authorization header:
+```
+Authorization: Bearer <jwt_token>
+```
+
+The JWT token can be obtained by logging in through the Users API:
+```graphql
+mutation {
+  login(input: {
+    email: "user@example.com"
+    password: "password"
+  }) {
+    accessToken
+    refreshToken
+  }
+}
+```
+
+## Mutation Examples
+
+### Create Event (Requires Auth)
+```graphql
+mutation {
+  createEvent(input: {
+    title: "Node.js Workshop"
+    description: "Learn Node.js basics"
+    date: "2024-03-15T10:00:00Z"
+    location: "Tech Hub"
+    category: workshop
+    organizer: "techcommunity"
+    status: CONFIRMED
+  }) {
+    _id
+    title
+    description
+    date
+    location
+    category
+    organizer
+    status
+    createdAt
+    updatedAt
+  }
+}
+```
+
+### Update Event (Requires Auth)
+```graphql
+mutation {
+  updateEvent(
+    id: "699a4377f8fc201670baa7dd"
+    input: {
+      title: "Updated Workshop Title"
+      status: CONFIRMED
+    }
+  ) {
+    _id
+    title
+    status
+    updatedAt
+  }
+}
+```
+
+### Delete Event (Requires Auth)
+```graphql
+mutation {
+  deleteEvent(id: "699a4377f8fc201670baa7dd") {
+    _id
+    title
+  }
+}
+```
+
+**Note:** HTTP Header required:
+```
+Authorization: Bearer <jwt_token>
+```
