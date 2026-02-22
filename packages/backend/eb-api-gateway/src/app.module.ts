@@ -22,13 +22,13 @@ import { AuthModule } from "./auth/auth.module";
               name: "events",
               url:
                 process.env.EVENTS_SUBGRAPH_URL ||
-                "http://localhost:4001/graphql",
+                "http://eb-api-events:4001/graphql",
             },
             {
               name: "users",
               url:
                 process.env.USERS_SUBGRAPH_URL ||
-                "http://localhost:4002/graphql",
+                "http://eb-api-users:4002/graphql",
             },
           ],
           pollIntervalInMs: 10_000,
