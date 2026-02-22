@@ -32,6 +32,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 4000
+      DEBUG: "*"
       MONGODB_URI: mongodb://root:password@mongodb:27017?authSource=admin
       EVENTS_SUBGRAPH_URL: http://eb-api-events:4001/graphql
       USERS_SUBGRAPH_URL: http://eb-api-users:4002/graphql
@@ -56,6 +57,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 4001
+      DEBUG: "*"
       MONGODB_URI: mongodb://root:password@mongodb:27017/eb_events?authSource=admin
       APOLLO_GATEWAY_URL: http://eb-api-gateway:4000
     depends_on:
@@ -74,6 +76,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 4002
+      DEBUG: "*"
       MONGODB_URI: mongodb://root:password@mongodb:27017/eb_users?authSource=admin
       JWT_SECRET: your-secret-key-change-in-production
       APOLLO_GATEWAY_URL: http://eb-api-gateway:4000

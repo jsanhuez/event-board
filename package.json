@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "docker-compose -f docker-compose.yml up",
-    "dev:build": "docker-compose -f docker-compose.yml up --build",
+    "dev:build": "docker-compose -f docker-compose.yml up --build --force-recreate",
     "down": "docker-compose -f docker-compose.yml down",
     "logs": "docker-compose -f docker-compose.yml logs -f",
     "lint": "pnpm -r run lint",
