@@ -1,10 +1,12 @@
-const { ModuleFederationPlugin } = require('@module-federation/enhanced/webpack');
+// using webpack's built-in ModuleFederationPlugin instead of enhanced
+const { container: { ModuleFederationPlugin } } = require('webpack');
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isDevelopment = argv.mode === 'development';
-  
+
   return {
     entry: './src/index.tsx',
     devtool: isDevelopment ? 'inline-source-map' : 'source-map',
@@ -14,12 +16,12 @@ module.exports = (env, argv) => {
       chunkFilename: '[name].[contenthash].js',
       publicPath: 'auto',
     },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json'],
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.json'],
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
     },
-  },
     devServer: {
       port: 3002,
       historyApiFallback: true,
@@ -46,31 +48,33 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
-    new ModuleFederationPlugin({
-      name: 'ebWebAppUsers',
-      filename: 'remoteEntry.js',
-      exposes: {
-        './UsersApp': './src/UsersApp.tsx',
-      },
-      enableTypescriptFederation: false,
-      shared: {
-        react: {
-          singleton: true,
-          requiredVersion: false,
-          eager: true,
+      new webpack.DefinePlugin({
+        'process.env.REACT_APP_API_GATEWAY_URL': JSON.stringify(process.env.REACT_APP_API_GATEWAY_URL),
+      }),
+      new ModuleFederationPlugin({
+        name: 'ebWebAppUsers',
+        filename: 'remoteEntry.js',
+        exposes: {
+          './UsersApp': './src/UsersApp.tsx',
         },
-        'react-dom': {
-          singleton: true,
-          requiredVersion: false,
-          eager: true,
+        shared: {
+          react: {
+            singleton: true,
+            requiredVersion: false,
+            eager: true,
+          },
+          'react-dom': {
+            singleton: true,
+            requiredVersion: false,
+            eager: true,
+          },
+          '@mui/material': {
+            singleton: true,
+            requiredVersion: false,
+            eager: true,
+          },
         },
-        '@mui/material': {
-          singleton: true,
-          requiredVersion: false,
-          eager: true,
-        },
-      },
-    }),
+      }),
       new HtmlWebpackPlugin({
         template: './public/index.html',
         favicon: './public/favicon.ico',
