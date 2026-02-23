@@ -32,6 +32,23 @@ pnpm build  # Build for production
 ## Access Application
 Navigate to http://localhost:3000
 
+## Running
+```
+pnpm dev    # Development mode with hot reload
+pnpm build  # Build for production
+```
+
+## Testing
+
+Unit tests are located under `test/` and use Jest + React Testing Library. Run:
+
+```bash
+pnpm test
+pnpm test:watch
+```
+
+Coverage output goes to `coverage/`.
+
 ## Architecture
 - Host communicates with API Gateway at `http://localhost:4000/graphql`
 - Dynamically loads remote modules from ports 3001 and 3002
