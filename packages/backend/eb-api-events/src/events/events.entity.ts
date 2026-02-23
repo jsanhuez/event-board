@@ -58,6 +58,10 @@ export class Event extends Document {
   status!: EventStatus;
 
   @Field()
+  @Prop({ required: true })
+  creatorId!: string;
+
+  @Field()
   @Prop({ default: () => new Date() })
   createdAt!: Date;
 

@@ -1,6 +1,9 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import { UseGuards } from "@nestjs/common";
 import { Event } from "./events.entity";
 import { EventsService } from "./events.service";
+import { GqlAuthGuard } from "../auth/gql-auth.guard";
+import { CurrentUser } from "../auth/current-user.decorator";
 import {
   CreateEventInput,
   UpdateEventInput,
@@ -25,20 +28,30 @@ export class EventsResolver {
   }
 
   @Mutation(() => Event)
-  async createEvent(@Args("input") input: CreateEventInput): Promise<Event> {
-    return this.eventsService.create(input);
+  @UseGuards(GqlAuthGuard)
+  async createEvent(
+    @Args("input") input: CreateEventInput,
+    @CurrentUser() user: any,
+  ): Promise<Event> {
+    return this.eventsService.create(input, user.userId);
   }
 
   @Mutation(() => Event)
+  @UseGuards(GqlAuthGuard)
   async updateEvent(
     @Args("id") id: string,
     @Args("input") input: UpdateEventInput,
+    @CurrentUser() user: any,
   ): Promise<Event> {
     return this.eventsService.update(id, input);
   }
 
   @Mutation(() => Event, { nullable: true })
-  async deleteEvent(@Args("id") id: string): Promise<Event> {
+  @UseGuards(GqlAuthGuard)
+  async deleteEvent(
+    @Args("id") id: string,
+    @CurrentUser() user: any,
+  ): Promise<Event> {
     return this.eventsService.remove(id);
   }
 }

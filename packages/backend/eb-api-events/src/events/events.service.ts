@@ -12,8 +12,11 @@ import {
 export class EventsService {
   constructor(@InjectModel(Event.name) private eventModel: Model<Event>) {}
 
-  async create(createEventInput: CreateEventInput): Promise<Event> {
-    const createdEvent = new this.eventModel(createEventInput);
+  async create(createEventInput: CreateEventInput, creatorId: string): Promise<Event> {
+    const createdEvent = new this.eventModel({
+      ...createEventInput,
+      creatorId,
+    });
     return createdEvent.save();
   }
 
