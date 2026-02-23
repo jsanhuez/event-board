@@ -176,6 +176,11 @@ pnpm test            # ejecuta cada servicio secuencialmente
 
 La cobertura se recopila por Jest y se escribe en directorios `coverage/` en cada paquete, más un informe de todo el espacio de trabajo en `coverage/lcov-report/index.html`. Se pueden agregar umbrales en `jest.config.ts` si es deseado.
 
+```bash
+# ejecutar pruebas con cobertura
+npx jest --coverage 
+```
+
 Tipos de pruebas:
 
 1. **Unitarias** – Archivos `.spec.ts` junto con código fuente usan `@nestjs/testing` o React Testing Library y mocks de jest.
