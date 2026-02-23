@@ -1,144 +1,119 @@
 # Event Board - Monorepo
 
-Event Board is a full-stack application for managing internal events within a team. It's built using a microservices architecture with GraphQL Federation and Module Federation for the frontend.
+## Autor
+Juan Sanhueza R.
 
-## 🏗️ Architecture
+## DESCRIPCIÓN GENERAL
+Event Board es una aplicación de Full-stack para gestionar eventos internos dentro de un equipo. Está construida utilizando una arquitectura de microservicios con GraphQL Federation y Module Federation para el frontend.
 
-### Backend (NestJS with GraphQL Apollo Federation)
+Modalidad elegida: Opción A
 
-- **eb-api-gateway**: Apollo Gateway / Router that composes schemas from subgraphs
-  - Handles authentication with JWT tokens
-  - Validates inputs using class-validator
-  - Acts as the single entry point for all client requests
-  - Ports: 4000
+### Adicionales
+- GraphQL
+- Autenticación JWT
+- Docker
+- Micro-frontend 
+- Testing avanzado 
 
-- **eb-api-events**: Subgraph microservice for Events
-  - CRUD operations for events
-  - MongoDB integration for event collection
-  - GraphQL federation support
-  - Ports: 4001
+## 🚀 Inicio Rápido
 
-- **eb-api-users**: Subgraph microservice for Users
-  - User registration and login
-  - JWT token generation
-  - User management (create, update)
-  - MongoDB integration for users collection
-  - Ports: 4002
-
-### Database
-
-- **MongoDB**: Document database with two separate databases
-  - `eb_events`: Contains events collection
-  - `eb_users`: Contains users collection
-  - Connection: `mongodb://root:password@mongodb:27017`
-  - Ports: 27017
-
-### Frontend (React with Module Federation)
-
-- **eb-web-app**: Host application
-  - Main entry point for users
-  - Integrates remote modules (Events and Users)
-  - Handles authentication flow and token management
-  - Ports: 3000
-
-- **eb-web-app-events**: Remote module for Events
-  - Event listing, filtering, creation, update, deletion
-  - Hooks for API requests to eb-api-gateway
-  - Components: EventList, EventCard, CreateEvent, UpdateEvent
-  - Ports: 3001
-
-- **eb-web-app-users**: Remote module for Users
-  - User registration and login
-  - JWT token management
-  - Secure HTTP-only cookies for refresh tokens
-  - Ports: 3002
-
-## 🚀 Quick Start
-
-### Prerequisites
+### Requisitos Previos
 
 - Docker & Docker Compose
-- Node.js 24+ (for local development without Docker)
+- Node.js 24+
 - pnpm (npm install -g pnpm)
 
-### Running with Docker Compose
+### Environment Files
+- Copia `.env.example` to `.env` en cada servicio:
+  - `packages/backend/eb-api-gateway/.env`
+  - `packages/backend/eb-api-events/.env`
+  - `packages/backend/eb-api-users/.env`
+  - `packages/frontend/eb-web-app/.env`
+  - `packages/frontend/eb-web-app-events/.env`
+  - `packages/frontend/eb-web-app-users/.env`
+Para pruebas locales, puedes usar los valores predeterminados en `.env.example`, pero asegúrate de cambiar `JWT_SECRET` a un valor fuerte para producción.
+
+### Ejecución con Docker Compose
 
 ```bash
-# Clone the repository
+# Navegar al root de proyecto
 cd event-board
 
-# Run all services
+# Ejecutar todos los servicios
 pnpm dev:build
 
-# Or just run without rebuild
+# O ejecutar sin reconstruir
 pnpm dev
 
-# View logs
+# Ver logs
 pnpm logs
 
-# Stop all services
+# Detener todos los servicios
 pnpm down
 ```
 
-### Running locally without Docker
+## Arquitectura
 
-```bash
-# Install dependencies
-pnpm install
+### Backend (NestJS con GraphQL Apollo Federation)
 
-# Start backend services (in separate terminals)
-cd packages/backend/eb-api-gateway
-pnpm dev
+- **eb-api-gateway**: Apollo Gateway / Router que compone esquemas desde subgrafos
+  - [Federation (eb-api-gateway)](packages/backend/eb-api-gateway/README.md)
 
-cd packages/backend/eb-api-events
-pnpm dev
+- **eb-api-events**: Microservicio subgrafo para Eventos
+  - [eb-api-events](packages/backend/eb-api-events/README.md)
 
-cd packages/backend/eb-api-users
-pnpm dev
+- **eb-api-users**: Microservicio subgrafo para Usuarios
+  - [eb-api-users](packages/backend/eb-api-users/README.md)
 
-# Start frontend services (in separate terminals)
-cd packages/frontend/eb-web-app
-pnpm dev
+### Base de Datos
 
-cd packages/frontend/eb-web-app-events
-pnpm dev
+- **MongoDB**: Base de datos de documentos con dos bases de datos separadas
+  - `eb_events`: Contiene colección de eventos
+  - `eb_users`: Contiene colección de usuarios
 
-cd packages/frontend/eb-web-app-users
-pnpm dev
-```
+### Frontend (React con Module Federation)
 
-## 📁 Project Structure
+- **eb-web-app**: Aplicación Host
+  - [eb-web-app](packages/frontend/eb-web-app/README.md)
+
+- **eb-web-app-events**: Módulo remoto para Eventos
+  - [eb-web-app-events](packages/frontend/eb-web-app-events/README.md)
+
+- **eb-web-app-users**: Módulo remoto para Usuarios
+  - [eb-web-app-users](packages/frontend/eb-web-app-users/README.md)
+
+## Estructura del Proyecto
 
 ```
 event-board/
 ├── packages/
 │   ├── backend/
 │   │   ├── eb-api-gateway/       # Apollo Gateway
-│   │   ├── eb-api-events/        # Events Subgraph
-│   │   └── eb-api-users/         # Users Subgraph
+│   │   ├── eb-api-events/        # Subgrafo de Eventos
+│   │   └── eb-api-users/         # Subgrafo de Usuarios
 │   └── frontend/
-│       ├── eb-web-app/           # Host Application
-│       ├── eb-web-app-events/    # Events Remote Module
-│       └── eb-web-app-users/     # Users Remote Module
+│       ├── eb-web-app/           # Aplicación Host
+│       ├── eb-web-app-events/    # Módulo Remoto de Eventos
+│       └── eb-web-app-users/     # Módulo Remoto de Usuarios
 ├── scripts/
-│   └── init-mongodb.js           # MongoDB initialization script
-├── docker-compose.yml             # Docker Compose configuration
-├── pnpm-workspace.yaml            # pnpm workspace configuration
-└── package.json                   # Root package.json
+│   └── init-mongodb.js           # Script de inicialización MongoDB
+├── docker-compose.yml             # Configuración Docker Compose
+├── pnpm-workspace.yaml            # Configuración del espacio de trabajo pnpm
+└── package.json                   # package.json raíz
 ```
 
-## 🔐 Authentication Flow
+## Flujo de Autenticación
 
-1. User navigates to `/login` on eb-web-app
-2. Selects Register or Login on eb-web-app-users module
-3. Credentials sent to eb-api-gateway → eb-api-users subgraph
-4. JWT access token generated and stored in sessionStorage
-5. Refresh token stored in secure HTTP-only cookie
-6. Access token sent with each API request to eb-api-gateway
+1. Usuario navega a `/` en eb-web-app
+2. Selecciona Registro o Inicio de Sesión en módulo eb-web-app-users
+3. Credenciales enviadas a eb-api-gateway → subgrafo eb-api-users
+4. Token de acceso JWT generado y almacenado en sessionStorage
+5. Token de refresco almacenado en cookie HTTP-only segura
+6. Token de acceso enviado con cada solicitud de API a eb-api-gateway
 
-## 🗄️ Database Schema
+## Esquema de Base de Datos
 
-### Events Collection (eb_events database)
+### Colección de Eventos (base de datos eb_events)
 ```javascript
 {
   _id: ObjectId,
@@ -154,160 +129,131 @@ event-board/
 }
 ```
 
-### Users Collection (eb_users database)
+### Colección de Usuarios (base de datos eb_users)
 ```javascript
 {
   _id: ObjectId,
   email: String (unique),
   name: String,
-  password: String (hashed),
+  password: String (hasheada),
   createdAt: Date,
   updatedAt: Date
 }
 ```
 
-## 🔄 Data Validation
+## Validación de Datos
 
-- **API Gateway Level**: Cross-cutting validation for authentication, authorization, and common input validation
-- **Subgraph Level**: Each microservice validates its own schema fields using class-validator
+- **Nivel API Gateway**: Validación transversal para autenticación, autorización y validación de inputs comunes
+- **Nivel Subgrafo**: Cada microservicio valida sus propios campos de esquema usando class-validator
 
-## 📝 Environment Variables
+## Variables de Entorno
 
-Each service has an `.env.example` file. Copy to `.env` and customize:
+Cada servicio tiene un archivo `.env.example`. Cópialo a `.env` y personaliza:
 
-### Backend Services
+### Servicios Backend
 - `NODE_ENV`: development/production
-- `PORT`: Service port
-- `MONGODB_URI`: Database connection string
-- `JWT_SECRET`: Secret key for JWT signing
+- `PORT`: Puerto del servicio
+- `MONGODB_URI`: Cadena de conexión de la base de datos
+- `JWT_SECRET`: Clave secreta para firmar JWT
 
-### Frontend Services
-- `REACT_APP_API_GATEWAY_URL`: GraphQL endpoint
+### Servicios Frontend
+- `REACT_APP_API_GATEWAY_URL`: Endpoint de GraphQL
 
-## 🛠️ Development
+## Testing
 
-### Available Scripts
-
-Root level:
-- `pnpm dev:build` - Build and run with Docker Compose
-- `pnpm dev` - Run with Docker Compose
-- `pnpm down` - Stop Docker Compose
-- `pnpm logs` - View logs from all services
-- `pnpm lint` - Run linting across all packages
-- `pnpm type-check` - Type check all packages
-
-Individual packages:
-- `pnpm build` - Build the package
-- `pnpm start` - Start the package
-- `pnpm dev` - Start in development mode with hot reload
-
-## 🧪 Testing
-
-Each service can be tested independently. packages use Jest for unit, integration and
-end-to-end tests; front‑end apps use Jest + React Testing Library. A memory MongoDB
-server is spun up automatically for backend integrations, so no external database is
-required during testing.
+Cada servicio puede probarse independientemente. Los paquetes usan Jest para pruebas unitarias, integración y extremo a extremo; las aplicaciones frontend usan Jest + React Testing Library. Un servidor MongoDB en memoria se inicia automáticamente para integraciones de backend, por lo que no se requiere base de datos externa durante las pruebas.
 
 ```bash
-# run tests in a single package
+# ejecutar pruebas en un paquete único
 cd packages/backend/eb-api-events
 pnpm test
 
-# run all packages from workspace root
-pnpm test            # runs every service sequentially
+# ejecutar todos los paquetes desde la raíz del espacio de trabajo
+pnpm test            # ejecuta cada servicio secuencialmente
 ```
 
-Coverage is collected by Jest and written to `coverage/` directories in each
-package, plus a workspace-wide report at `coverage/lcov-report/index.html`.
-Thresholds can be added in `jest.config.ts` if desired.
+La cobertura se recopila por Jest y se escribe en directorios `coverage/` en cada paquete, más un informe de todo el espacio de trabajo en `coverage/lcov-report/index.html`. Se pueden agregar umbrales en `jest.config.ts` si es deseado.
 
-Test types:
+Tipos de pruebas:
 
-1. **Unit** – `.spec.ts` files alongside source code use `@nestjs/testing` or
-   React Testing Library and jest mocks.
-2. **Integration** – database‑backed tests named `.integration-spec.ts` hit a real
-   in‑memory Mongo instance (`mongodb-memory-server`).
-3. **E2E** – `.e2e-spec.ts` files start a Nest application, override guards, and
-   exercise HTTP/GraphQL endpoints using `supertest`.
+1. **Unitarias** – Archivos `.spec.ts` junto con código fuente usan `@nestjs/testing` o React Testing Library y mocks de jest.
+2. **Integración** – Pruebas respaldadas por base de datos denominadas `.integration-spec.ts` acceden a una instancia MongoDB en memoria real (`mongodb-memory-server`).
+3. **E2E** – Archivos `.e2e-spec.ts` inician una aplicación Nest, anulan guards, y ejercitan endpoints HTTP/GraphQL usando `supertest`.
 
-Placeholders are added to packages without real tests so Jest exits cleanly.
+Se agregan placeholders en paquetes sin pruebas reales para que Jest se cierre limpiamente.
 
-## 📊 GraphQL Playground
+## Consideraciones de Seguridad
 
-After starting the services, access the GraphQL playground at:
-- Apollo Gateway: http://localhost:4000/graphql
-- Events Subgraph: http://localhost:4001/graphql
-- Users Subgraph: http://localhost:4002/graphql
+1. Los tokens JWT expiran después de 1 hora
+2. Los tokens de refresco duran 7 días
+3. Las contraseñas se hashean usando bcryptjs
+4. Los tokens de refresco almacenados en cookies HTTP-only
+5. Los tokens de acceso almacenados en sessionStorage
+6. CORS configurado para servicios Docker
+7. Cambia JWT_SECRET en producción
 
-## 🔗 API Endpoints
-
-### Events (through Apollo Gateway)
-- `query events(filter: EventFilterInput)` - List events with optional filters
-- `query event(id: String!)` - Get event by ID
-- `mutation createEvent(input: CreateEventInput!)` - Create event (requires auth)
-- `mutation updateEvent(input: UpdateEventInput!)` - Update event (requires auth)
-- `mutation deleteEvent(id: String!)` - Delete event (requires auth)
-
-### Users (through Apollo Gateway)
-- `mutation register(input: RegisterInput!)` - Register new user
-- `mutation login(input: LoginInput!)` - Login user
-- `mutation updateUser(input: UpdateUserInput!)` - Update user
-- `query user(id: String!)` - Get user by ID
-
-## 🔐 Security Considerations
-
-1. JWT tokens expire after 1 hour
-2. Refresh tokens last 7 days
-3. Passwords are hashed using bcryptjs
-4. Refresh tokens stored in HTTP-only cookies
-5. Access tokens stored in sessionStorage
-6. CORS configured for Docker services
-7. Change JWT_SECRET in production
-
-## 📚 Technologies
+## Tecnologías
 
 ### Backend
 - NestJS
-- GraphQL with Apollo Server & Federation
-- MongoDB with Mongoose
-- Bcryptjs for password hashing
-- JWT for authentication
+- GraphQL con Apollo Server & Federation
+- MongoDB con Mongoose
+- Bcryptjs para hashing de contraseñas
+- JWT para autenticación
 
 ### Frontend
 - React 18
 - Material-UI (MUI)
 - Module Federation (@module-federation/enhanced)
-- Axios for HTTP requests
-- React Router for navigation
+- Axios para solicitudes HTTP
+- React Router para navegación
 
 ### DevOps
 - Docker & Docker Compose
 - Node.js 24
 - MongoDB 7.0.5
 
-## 🐛 Troubleshooting
+## Mejoras Requeridas para Producción en AWS
 
-### MongoDB Connection Issues
-- Ensure MongoDB container is healthy: `docker ps` and check status
-- Check MongoDB credentials in docker-compose.yml
-- Verify MONGODB_URI in .env files
+### Infraestructura & CI/CD
+- ❌ **GitHub Actions Workflow**: Pipeline a implementar en `.github/workflows/ci-cd.yml`
+  - **Test stage**: Lint, type-check y tests en MongoDB in-memory (paralelo)
+  - **Build stage**: 6 imágenes Docker en paralelo con caché
+  - **Deploy stage**: Push a ECR y actualización de servicios ECS en main branch
+  - Setup: Crear workflow YAML que ejecute `pnpm test`, `pnpm lint`, `docker buildx build` con triggers en push/PR
+  - Secrets necesarios: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`
 
-### GraphQL Schema Issues
-- Clear dist folders and rebuild: `pnpm build`
-- Check schema auto-generation in GraphQL module configuration
+- ❌ **AWS ECR**: Autenticación y push de imágenes Docker tras tests exitosos
+  - Requer configurar IAM user con permisos `ecr:GetAuthorizationToken` y `ecr:BatchGetImage`
+  
+- ❌ **ECS Cluster**: Orquestación con Fargate o EC2 para 6 servicios
+  - Health checks en `/health` (implementar en NestJS)
+  - Auto-scaling por CPU/memoria
+  - Load balancer (ALB) con sticky sessions para sessions
 
-### Module Federation Issues
-- Ensure all remote modules are running on correct ports
-- Check webpack configuration for correct remotes URLs
-- Clear dist folders and rebuild
+- ❌ **Infrastructure as Code**: Terraform para provisionar ECR, ECS, RDS, VPC, ALB
+  - Variables: región, nombre cluster, tamaño instancias, scaling policies
 
-### Port Conflicts
-- Modify docker-compose.yml or .env files to change service ports
-- Ensure no other services are using ports 3000-3002, 4000-4002, 27017
+- ❌ **RDS/DocumentDB**: Reemplazar MongoDB local por DocumentDB gestionado
+  - Connection pooling con elasticache Redis para sesiones JWT
 
-## 📝 Contributing
+### Operacional & Observabilidad
+- ❌ **Health Checks**: Endpoints `/health` y `/ready` para ALB/ECS
+- ❌ **CloudWatch Logs**: Integración de logs centralizados
+- ❌ **X-Ray/APM**: Trazabilidad distribuida entre microservicios
+- ❌ **CloudWatch Alarms**: Alertas para CPU, memoria, errores
 
-Follow the project guidelines in `.github/copilot-instructions.md`
+### Seguridad
+- ❌ **AWS Secrets Manager**: Gestión de JWT_SECRET, credenciales BD y API keys
+- ❌ **CORS Restrictivo**: Reemplazar `'*'` con dominios específicos
+- ❌ **Rate Limiting**: Implementar en API Gateway para prevenir abuso
+- ❌ **SAST/SCA**: SonarQube o Snyk en el pipeline CI
+- ❌ **TLS/HTTPS**: Certificados ACM en prod
+- ❌ **WAF**: AWS WAF en CloudFront/ALB
 
-## Author
-Juan Sanhueza R.
+### Optimización & Escalabilidad
+- ❌ **Load Balancer**: ALB con health checks y sticky sessions
+- ❌ **Auto Scaling**: Políticas según CPU/memoria
+- ❌ **CloudFront**: CDN para frontend y assets estáticos
+- ❌ **Redis/ElastiCache**: Caching de sesiones y datos frecuentes
+- ❌ **Optimización de Dockerfiles**: Multi-stage mejorado, especialmente backend
