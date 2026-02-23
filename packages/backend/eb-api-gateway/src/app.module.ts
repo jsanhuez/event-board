@@ -1,7 +1,11 @@
 import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from "@nestjs/apollo";
-import { IntrospectAndCompose } from "@apollo/gateway";
+import {
+  IntrospectAndCompose,
+  RemoteGraphQLDataSource,
+} from "@apollo/gateway";
+import type { ServiceEndpointDefinition } from "@apollo/gateway";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { AuthModule } from "./auth/auth.module";
@@ -32,6 +36,23 @@ import { AuthModule } from "./auth/auth.module";
             },
           ],
           pollIntervalInMs: 10_000,
+        }),
+        buildService({ url }: ServiceEndpointDefinition) {
+          return new RemoteGraphQLDataSource({
+            url,
+            willSendRequest({ request, context }) {
+              const auth = context?.req?.headers?.authorization;
+              if (auth && request.http?.headers) {
+                request.http.headers.set("authorization", auth);
+              }
+            },
+          });
+        },
+      },
+      server: {
+        context: ({ req }: { req: Express.Request }) => ({
+          user: req.user,
+          req,
         }),
       },
     }),
