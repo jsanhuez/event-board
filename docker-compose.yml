@@ -36,7 +36,7 @@ services:
       MONGODB_URI: mongodb://root:password@mongodb:27017?authSource=admin
       EVENTS_SUBGRAPH_URL: http://eb-api-events:4001/graphql
       USERS_SUBGRAPH_URL: http://eb-api-users:4002/graphql
-      JWT_SECRET: your-secret-key-change-in-production
+      JWT_SECRET: your-super-secret-key-change-in-production-immediately
     depends_on:
       mongodb:
         condition: service_healthy
@@ -60,6 +60,7 @@ services:
       DEBUG: "*"
       MONGODB_URI: mongodb://root:password@mongodb:27017/eb_events?authSource=admin
       APOLLO_GATEWAY_URL: http://eb-api-gateway:4000
+      JWT_SECRET: your-super-secret-key-change-in-production-immediately
     depends_on:
       mongodb:
         condition: service_healthy
@@ -78,7 +79,7 @@ services:
       PORT: 4002
       DEBUG: "*"
       MONGODB_URI: mongodb://root:password@mongodb:27017/eb_users?authSource=admin
-      JWT_SECRET: your-secret-key-change-in-production
+      JWT_SECRET: your-super-secret-key-change-in-production-immediately
       APOLLO_GATEWAY_URL: http://eb-api-gateway:4000
     depends_on:
       mongodb:
