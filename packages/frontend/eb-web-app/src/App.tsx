@@ -6,14 +6,8 @@ import {
   Navigate,
 } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-import {
-  Box,
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Container,
-} from "@mui/material";
+import { Box, Container } from "@mui/material";
+import { NavBar } from "./components/NavBar";
 import Cookies from "js-cookie";
 import { AuthContext } from "./AuthContext";
 
@@ -71,18 +65,7 @@ export default function App() {
               minHeight: "100vh",
             }}
           >
-            <AppBar position="static">
-              <Toolbar>
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  Event Board
-                </Typography>
-                {isLoggedIn && (
-                  <Button color="inherit" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                )}
-              </Toolbar>
-            </AppBar>
+            <NavBar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
 
             <Container maxWidth="lg" sx={{ flex: 1, py: 4 }}>
               <Suspense fallback={<div>Loading...</div>}>
@@ -91,14 +74,13 @@ export default function App() {
                     path="/login"
                     element={
                       isLoggedIn ? (
-                        <Navigate to="/events" />
+                        <Navigate to="/" />
                       ) : (
                         <UsersApp setIsLoggedIn={setIsLoggedIn} />
                       )
                     }
                   />
-                  <Route path="/events" element={<EventsApp />} />
-                  <Route path="/" element={<Navigate to="/events" />} />
+                  <Route path="/" element={<EventsApp />} />
                 </Routes>
               </Suspense>
             </Container>
