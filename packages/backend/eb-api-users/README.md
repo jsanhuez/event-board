@@ -41,6 +41,13 @@ pnpm start  # Start production build
 ## GraphQL Playground
 Navigate to http://localhost:4002/graphql to test queries and mutations.
 
+### Running tests
+
+```bash
+cd packages/backend/eb-api-users
+pnpm test          # only placeholder for now
+```
+
 ## Key Operations
 - `mutation register` - Register new user, returns JWT tokens
 - `mutation login` - Login user, returns JWT tokens

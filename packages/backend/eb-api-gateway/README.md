@@ -22,3 +22,10 @@ pnpm start  # Start production build
 
 ## GraphQL Playground
 Navigate to http://localhost:4000/graphql to test queries and mutations.
+
+### Running tests
+
+```bash
+cd packages/backend/eb-api-gateway
+pnpm test          # currently no tests; placeholder ensures this command exits 0
+```
