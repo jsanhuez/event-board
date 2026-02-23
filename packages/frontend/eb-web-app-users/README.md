@@ -46,5 +46,10 @@ pnpm build  # Build for production
 ## Module Export
 Exports `UsersApp` component as default export via Module Federation.
 
+## Testing
+
+There is currently a placeholder test in `test/` so that `pnpm test` passes.  Add
+real unit tests for components and hooks as needed.
+
 ## Integration
 Accepts `setIsLoggedIn` prop to notify parent app of authentication status.
