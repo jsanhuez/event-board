@@ -41,6 +41,9 @@ Para pruebas locales, puedes usar los valores predeterminados en `.env.example`,
 # Navegar al root de proyecto
 cd event-board
 
+# Instalar dependencias
+pnpm install
+
 # Ejecutar todos los servicios
 pnpm dev:build
 
