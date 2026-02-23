@@ -35,7 +35,18 @@ const theme = createTheme({
 
 export default function App() {
   const [token, setToken] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // simple JWT decoder for payload
+  const parseJwt = (tk: string) => {
+    try {
+      const base64 = tk.split(".")[1];
+      return JSON.parse(atob(base64));
+    } catch {
+      return null;
+    }
+  };
 
   useEffect(() => {
     // Try to load token from session storage or check refresh token
@@ -43,20 +54,39 @@ export default function App() {
     if (storedToken) {
       setToken(storedToken);
       setIsLoggedIn(true);
+      const payload = parseJwt(storedToken);
+      console.log("Parsed JWT payload:", payload);
+      console.log("Parsed JWT payload:", JSON.stringify(payload)); // Debugging line to check payload
+      if (payload && typeof payload.name === "string") {
+        setUserName(payload.name);
+      }
     }
   }, []);
+
+  // whenever token changes (including after login), keep userName in sync
+  useEffect(() => {
+    if (token) {
+      const payload = parseJwt(token);
+      if (payload && typeof payload.name === "string") {
+        setUserName(payload.name);
+      }
+    } else {
+      setUserName(null);
+    }
+  }, [token]);
 
   const handleLogout = () => {
     sessionStorage.removeItem("accessToken");
     Cookies.remove("refreshToken");
     setToken(null);
+    setUserName(null);
     setIsLoggedIn(false);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthContext.Provider value={{ token, setToken }}>
+      <AuthContext.Provider value={{ token, setToken, userName, setUserName }}>
         <Router>
           <Box
             sx={{
@@ -76,7 +106,11 @@ export default function App() {
                       isLoggedIn ? (
                         <Navigate to="/" />
                       ) : (
-                        <UsersApp setIsLoggedIn={setIsLoggedIn} />
+                        <UsersApp
+                          setIsLoggedIn={setIsLoggedIn}
+                          setToken={setToken}
+                          setUserName={setUserName}
+                        />
                       )
                     }
                   />

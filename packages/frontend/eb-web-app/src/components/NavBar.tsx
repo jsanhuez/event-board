@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import {
@@ -6,6 +6,7 @@ import {
   Logout as LogoutIcon,
   Event as EventIcon,
 } from "@mui/icons-material";
+import { AuthContext } from "../AuthContext";
 
 interface NavBarProps {
   isLoggedIn?: boolean;
@@ -16,6 +17,8 @@ export const NavBar: React.FC<NavBarProps> = ({
   isLoggedIn = false,
   onLogout,
 }) => {
+  const { userName } = useContext(AuthContext);
+  console.log("NavBar userName:", userName); // Debugging line to check userName value
   return (
     <AppBar position="static">
       <Toolbar>
@@ -38,9 +41,20 @@ export const NavBar: React.FC<NavBarProps> = ({
 
         {/* show login or logout button depending on auth state */}
         {isLoggedIn && onLogout ? (
-          <Button color="inherit" onClick={onLogout} startIcon={<LogoutIcon />}>
-            Logout
-          </Button>
+          <>
+            {userName && (
+              <Typography variant="subtitle1" sx={{ mr: 2 }}>
+                Hola {userName}!
+              </Typography>
+            )}
+            <Button
+              color="inherit"
+              onClick={onLogout}
+              startIcon={<LogoutIcon />}
+            >
+              Logout
+            </Button>
+          </>
         ) : (
           <Button
             color="inherit"
