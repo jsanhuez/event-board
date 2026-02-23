@@ -13,6 +13,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TableSortLabel,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -24,7 +25,15 @@ import {
   InputLabel,
 } from "@mui/material";
 import axios from "axios";
-import { AuthContext } from './AuthContext';
+import { AuthContext } from "./AuthContext";
+
+// build-time injected URL or fallback to default
+const API_GATEWAY_URL =
+  process.env.REACT_APP_API_GATEWAY_URL || "http://localhost:4000/graphql";
+console.log(
+  "process.env.REACT_APP_API_GATEWAY_URL:",
+  process.env.REACT_APP_API_GATEWAY_URL,
+);
 
 interface Event {
   _id: string;
@@ -59,7 +68,18 @@ export default function EventsApp() {
     status: "",
   });
 
+  const [sortConfig, setSortConfig] = useState<{
+    field: "title" | "date" | "location" | "category" | "status";
+    direction: "asc" | "desc";
+  }>({
+    field: "date",
+    direction: "asc",
+  });
+
   const authContext = useContext(AuthContext);
+  const isAuthenticated = !!(
+    sessionStorage.getItem("accessToken") || authContext?.token
+  );
 
   useEffect(() => {
     fetchEvents();
@@ -97,8 +117,7 @@ export default function EventsApp() {
 
     try {
       const response = await axios.post(
-        process.env.REACT_APP_API_GATEWAY_URL ||
-          "http://localhost:4000/graphql",
+        API_GATEWAY_URL,
         { query },
         { headers: getAuthHeader() },
       );
@@ -122,9 +141,9 @@ export default function EventsApp() {
         description: event.description,
         date: event.date.split("T")[0],
         location: event.location,
-        category: event.category,
+        category: event.category?.toLowerCase() ?? "workshop",
         organizer: event.organizer,
-        status: event.status,
+        status: event.status?.toLowerCase() ?? "draft",
       });
     } else {
       setEditingId(null);
@@ -156,16 +175,18 @@ export default function EventsApp() {
     if (editingId) {
       const mutation = `
         mutation {
-          updateEvent(input: {
-            id: "${editingId}"
-            title: "${formData.title}"
-            description: "${formData.description}"
-            date: "${formData.date}T00:00:00Z"
-            location: "${formData.location}"
-            category: ${formData.category.toUpperCase()}
-            organizer: "${formData.organizer}"
-            status: ${formData.status.toUpperCase()}
-          }) {
+          updateEvent(
+            id: "${editingId}",
+            input: {  
+              title: "${formData.title}"
+              description: "${formData.description}"
+              date: "${formData.date}T00:00:00Z"
+              location: "${formData.location}"
+              category: ${formData.category.toUpperCase()}
+              organizer: "${formData.organizer}"
+              status: ${formData.status.toUpperCase()}
+            }
+          ) {
             _id
             title
             description
@@ -180,8 +201,7 @@ export default function EventsApp() {
 
       try {
         const response = await axios.post(
-          process.env.REACT_APP_API_GATEWAY_URL ||
-            "http://localhost:4000/graphql",
+          API_GATEWAY_URL,
           { query: mutation },
           { headers: getAuthHeader() },
         );
@@ -223,8 +243,7 @@ export default function EventsApp() {
 
       try {
         const response = await axios.post(
-          process.env.REACT_APP_API_GATEWAY_URL ||
-            "http://localhost:4000/graphql",
+          API_GATEWAY_URL,
           { query: mutation },
           { headers: getAuthHeader() },
         );
@@ -255,8 +274,7 @@ export default function EventsApp() {
 
     try {
       const response = await axios.post(
-        process.env.REACT_APP_API_GATEWAY_URL ||
-          "http://localhost:4000/graphql",
+        API_GATEWAY_URL,
         { query: mutation },
         { headers: getAuthHeader() },
       );
@@ -318,33 +336,139 @@ export default function EventsApp() {
           </Select>
         </FormControl>
 
-        <Button
-          variant="contained"
-          onClick={() => handleOpenDialog()}
-          sx={{ ml: "auto" }}
-        >
-          Create Event
-        </Button>
+        {isAuthenticated && (
+          <Button
+            variant="contained"
+            onClick={() => handleOpenDialog()}
+            sx={{ ml: "auto" }}
+          >
+            Create Event
+          </Button>
+        )}
       </Stack>
 
       <TableContainer component={Card}>
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-              <TableCell>
-                <strong>Title</strong>
+              <TableCell
+                sortDirection={
+                  sortConfig.field === "title" ? sortConfig.direction : false
+                }
+              >
+                <TableSortLabel
+                  active={sortConfig.field === "title"}
+                  direction={
+                    sortConfig.field === "title" ? sortConfig.direction : "asc"
+                  }
+                  onClick={() =>
+                    setSortConfig((prev) => ({
+                      field: "title",
+                      direction:
+                        prev.field === "title" && prev.direction === "asc"
+                          ? "desc"
+                          : "asc",
+                    }))
+                  }
+                >
+                  <strong>Title</strong>
+                </TableSortLabel>
               </TableCell>
-              <TableCell>
-                <strong>Date</strong>
+              <TableCell
+                sortDirection={
+                  sortConfig.field === "date" ? sortConfig.direction : false
+                }
+              >
+                <TableSortLabel
+                  active={sortConfig.field === "date"}
+                  direction={
+                    sortConfig.field === "date" ? sortConfig.direction : "asc"
+                  }
+                  onClick={() =>
+                    setSortConfig((prev) => ({
+                      field: "date",
+                      direction:
+                        prev.field === "date" && prev.direction === "asc"
+                          ? "desc"
+                          : "asc",
+                    }))
+                  }
+                >
+                  <strong>Date</strong>
+                </TableSortLabel>
               </TableCell>
-              <TableCell>
-                <strong>Location</strong>
+              <TableCell
+                sortDirection={
+                  sortConfig.field === "location" ? sortConfig.direction : false
+                }
+              >
+                <TableSortLabel
+                  active={sortConfig.field === "location"}
+                  direction={
+                    sortConfig.field === "location"
+                      ? sortConfig.direction
+                      : "asc"
+                  }
+                  onClick={() =>
+                    setSortConfig((prev) => ({
+                      field: "location",
+                      direction:
+                        prev.field === "location" && prev.direction === "asc"
+                          ? "desc"
+                          : "asc",
+                    }))
+                  }
+                >
+                  <strong>Location</strong>
+                </TableSortLabel>
               </TableCell>
-              <TableCell>
-                <strong>Category</strong>
+              <TableCell
+                sortDirection={
+                  sortConfig.field === "category" ? sortConfig.direction : false
+                }
+              >
+                <TableSortLabel
+                  active={sortConfig.field === "category"}
+                  direction={
+                    sortConfig.field === "category"
+                      ? sortConfig.direction
+                      : "asc"
+                  }
+                  onClick={() =>
+                    setSortConfig((prev) => ({
+                      field: "category",
+                      direction:
+                        prev.field === "category" && prev.direction === "asc"
+                          ? "desc"
+                          : "asc",
+                    }))
+                  }
+                >
+                  <strong>Category</strong>
+                </TableSortLabel>
               </TableCell>
-              <TableCell>
-                <strong>Status</strong>
+              <TableCell
+                sortDirection={
+                  sortConfig.field === "status" ? sortConfig.direction : false
+                }
+              >
+                <TableSortLabel
+                  active={sortConfig.field === "status"}
+                  direction={
+                    sortConfig.field === "status" ? sortConfig.direction : "asc"
+                  }
+                  onClick={() =>
+                    setSortConfig((prev) => ({
+                      field: "status",
+                      direction:
+                        prev.field === "status" && prev.direction === "asc"
+                          ? "desc"
+                          : "asc",
+                    }))
+                  }
+                >
+                  <strong>Status</strong>
+                </TableSortLabel>
               </TableCell>
               <TableCell align="right">
                 <strong>Actions</strong>
@@ -352,35 +476,74 @@ export default function EventsApp() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {events.map((event) => (
-              <TableRow key={event._id}>
-                <TableCell>{event.title}</TableCell>
-                <TableCell>
-                  {new Date(event.date).toLocaleDateString()}
-                </TableCell>
-                <TableCell>{event.location}</TableCell>
-                <TableCell>{event.category}</TableCell>
-                <TableCell>{event.status}</TableCell>
-                <TableCell align="right">
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => handleOpenDialog(event)}
-                    sx={{ mr: 1 }}
+            {[...events]
+              .sort((a, b) => {
+                const { field, direction } = sortConfig;
+
+                if (field === "date") {
+                  const aDate = new Date(a.date).getTime();
+                  const bDate = new Date(b.date).getTime();
+                  return direction === "asc" ? aDate - bDate : bDate - aDate;
+                }
+
+                const aValue = (a[field] || "").toString().toLowerCase();
+                const bValue = (b[field] || "").toString().toLowerCase();
+
+                if (aValue < bValue) return direction === "asc" ? -1 : 1;
+                if (aValue > bValue) return direction === "asc" ? 1 : -1;
+                return 0;
+              })
+              .map((event) => (
+                <TableRow key={event._id}>
+                  <TableCell>{event.title}</TableCell>
+                  <TableCell>
+                    {new Date(event.date).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>{event.location}</TableCell>
+                  <TableCell>{event.category}</TableCell>
+                  <TableCell
+                    sx={{
+                      color: ["CANCELLED", "DRAFT", "CONFIRMED"].includes(
+                        event.status,
+                      )
+                        ? "#ffffff"
+                        : undefined,
+                      backgroundColor:
+                        event.status === "CANCELLED"
+                          ? "#dc3545"
+                          : event.status === "DRAFT"
+                            ? "#6c757d"
+                            : event.status === "CONFIRMED"
+                              ? "#28a745"
+                              : undefined,
+                    }}
                   >
-                    Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="error"
-                    onClick={() => handleDeleteEvent(event._id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                    {event.status}
+                  </TableCell>
+                  <TableCell align="right">
+                    {isAuthenticated && (
+                      <>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => handleOpenDialog(event)}
+                          sx={{ mr: 1 }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleDeleteEvent(event._id)}
+                        >
+                          Delete
+                        </Button>
+                      </>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

@@ -48,12 +48,12 @@ module.exports = (env, argv) => {
     },
     plugins: [
       // load .env files into webpack build
-      // new (require('dotenv-webpack'))({
-      //   path: path.resolve(__dirname, '.env'),
-      //   safe: true, // load '.env.example' to verify the '.env' variables are all set
-      //   systemvars: true, // also load system environment variables
-      //   silent: true, // hide warnings
-      // }),
+      new (require('dotenv-webpack'))({
+        path: path.resolve(__dirname, '.env'),
+        safe: true, // load '.env.example' to verify the '.env' variables are all set
+        systemvars: true, // also load system environment variables
+        silent: true, // hide warnings
+      }),
       new ModuleFederationPlugin({
         name: 'ebWebAppEvents',
         filename: 'remoteEntry.js',
