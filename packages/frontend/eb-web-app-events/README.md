@@ -42,5 +42,14 @@ pnpm build  # Build for production
 - Development: 3000 (loaded as remote by host)
 - Standalone: 3001
 
+## Testing
+
+For now this package only contains UI code. A placeholder test lives in `test/`
+to keep Jest happy; add real tests alongside source files. Run:
+
+```bash
+pnpm test
+```
+
 ## Module Export
 Exports `EventsApp` component as default export via Module Federation.
