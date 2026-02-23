@@ -8,6 +8,8 @@ Event Board es una aplicación de Full-stack para gestionar eventos internos den
 
 Modalidad elegida: Opción A
 
+![Screenshot](screenshot.png)
+
 ### Adicionales
 - GraphQL
 - Autenticación JWT
@@ -15,7 +17,7 @@ Modalidad elegida: Opción A
 - Micro-frontend 
 - Testing avanzado 
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 ### Requisitos Previos
 
