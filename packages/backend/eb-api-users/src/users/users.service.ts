@@ -58,7 +58,13 @@ export class UsersService {
   }
 
   private generateTokens(user: any) {
-    const payload = { sub: user._id.toString(), email: user.email };
+    // include the user's name in the payload so downstream services
+    // and the frontend can read it from the token
+    const payload = {
+      sub: user._id.toString(),
+      email: user.email,
+      name: user.name,
+    };
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: "1h" });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: "7d" });
