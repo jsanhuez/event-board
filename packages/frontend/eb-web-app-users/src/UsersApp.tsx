@@ -46,9 +46,11 @@ function TabPanel(props: TabPanelProps) {
 
 interface UsersAppProps {
   setIsLoggedIn?: (value: boolean) => void;
+  setToken?: (token: string | null) => void;
+  setUserName?: (name: string | null) => void;
 }
 
-export default function UsersApp({ setIsLoggedIn }: UsersAppProps) {
+export default function UsersApp({ setIsLoggedIn, setToken, setUserName }: UsersAppProps) {
   const [tabValue, setTabValue] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -88,7 +90,7 @@ export default function UsersApp({ setIsLoggedIn }: UsersAppProps) {
         return;
       }
 
-      const { accessToken, refreshToken } = response.data.data.login;
+      const { accessToken, refreshToken, user } = response.data.data.login;
       sessionStorage.setItem("accessToken", accessToken);
       Cookies.set("refreshToken", refreshToken, {
         httpOnly: true,
@@ -98,7 +100,12 @@ export default function UsersApp({ setIsLoggedIn }: UsersAppProps) {
 
       if (authContext) {
         authContext.setToken(accessToken);
+        authContext.setUserName(user?.name || null);
       }
+
+      // notify host application as well
+      if (setToken) setToken(accessToken);
+      if (setUserName) setUserName(user?.name || null);
 
       setSuccessMessage("Login successful!");
       if (setIsLoggedIn) {
@@ -138,7 +145,7 @@ export default function UsersApp({ setIsLoggedIn }: UsersAppProps) {
         return;
       }
 
-      const { accessToken, refreshToken } = response.data.data.register;
+      const { accessToken, refreshToken, user } = response.data.data.register;
       sessionStorage.setItem("accessToken", accessToken);
       Cookies.set("refreshToken", refreshToken, {
         httpOnly: true,
@@ -148,7 +155,12 @@ export default function UsersApp({ setIsLoggedIn }: UsersAppProps) {
 
       if (authContext) {
         authContext.setToken(accessToken);
+        authContext.setUserName(user?.name || null);
       }
+
+      // notify host application as well
+      if (setToken) setToken(accessToken);
+      if (setUserName) setUserName(user?.name || null);
 
       setSuccessMessage("Registration successful!");
       if (setIsLoggedIn) {
