@@ -1,0 +1,72 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Event {
+  _id: ID!
+  title: String!
+  description: String!
+  date: DateTime!
+  location: String!
+  category: EventCategory!
+  organizer: String!
+  status: EventStatus!
+  creatorId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum EventCategory {
+  WORKSHOP
+  MEETUP
+  TALK
+  SOCIAL
+}
+
+enum EventStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+type Query {
+  events(filter: EventFilterInput): [Event!]!
+  event(id: String!): Event
+}
+
+input EventFilterInput {
+  category: String
+  status: String
+  organizer: String
+}
+
+type Mutation {
+  createEvent(input: CreateEventInput!): Event!
+  updateEvent(id: String!, input: UpdateEventInput!): Event!
+  deleteEvent(id: String!): Event
+}
+
+input CreateEventInput {
+  title: String!
+  description: String!
+  date: DateTime!
+  location: String!
+  category: EventCategory!
+  organizer: String!
+  status: EventStatus! = DRAFT
+}
+
+input UpdateEventInput {
+  title: String
+  description: String
+  date: DateTime
+  location: String
+  category: EventCategory
+  organizer: String
+  status: EventStatus
+}

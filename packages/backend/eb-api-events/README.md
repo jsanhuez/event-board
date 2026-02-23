@@ -39,6 +39,18 @@ pnpm start  # Start production build
 ## GraphQL Playground
 Navigate to http://localhost:4001/graphql to test queries and mutations.
 
+### Running tests
+
+```bash
+cd packages/backend/eb-api-events
+pnpm test          # all suites (unit/integration/e2e)
+pnpm test:watch    # watch mode
+```
+
+The `test/` directory contains examples and you can place new specs there.
+
+Coverage files appear in `packages/backend/eb-api-events/coverage`.
+
 ## Key Operations
 - `query events` - List all events with optional filters
 - `query event(id)` - Get single event by ID
