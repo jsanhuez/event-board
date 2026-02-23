@@ -203,12 +203,34 @@ Individual packages:
 
 ## 🧪 Testing
 
-Each service can be tested independently:
+Each service can be tested independently. packages use Jest for unit, integration and
+end-to-end tests; front‑end apps use Jest + React Testing Library. A memory MongoDB
+server is spun up automatically for backend integrations, so no external database is
+required during testing.
 
 ```bash
-cd packages/backend/eb-api-gateway
+# run tests in a single package
+cd packages/backend/eb-api-events
 pnpm test
+
+# run all packages from workspace root
+pnpm test            # runs every service sequentially
 ```
+
+Coverage is collected by Jest and written to `coverage/` directories in each
+package, plus a workspace-wide report at `coverage/lcov-report/index.html`.
+Thresholds can be added in `jest.config.ts` if desired.
+
+Test types:
+
+1. **Unit** – `.spec.ts` files alongside source code use `@nestjs/testing` or
+   React Testing Library and jest mocks.
+2. **Integration** – database‑backed tests named `.integration-spec.ts` hit a real
+   in‑memory Mongo instance (`mongodb-memory-server`).
+3. **E2E** – `.e2e-spec.ts` files start a Nest application, override guards, and
+   exercise HTTP/GraphQL endpoints using `supertest`.
+
+Placeholders are added to packages without real tests so Jest exits cleanly.
 
 ## 📊 GraphQL Playground
 
