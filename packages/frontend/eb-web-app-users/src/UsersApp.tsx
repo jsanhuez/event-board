@@ -13,7 +13,15 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { AuthContext } from './AuthContext';
+import { AuthContext } from "./AuthContext";
+
+// build-time injected URL or fallback to default
+const API_GATEWAY_URL =
+  process.env.REACT_APP_API_GATEWAY_URL || "http://localhost:4000/graphql";
+console.log(
+  "process.env.REACT_APP_API_GATEWAY_URL:",
+  process.env.REACT_APP_API_GATEWAY_URL,
+);
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -73,11 +81,7 @@ export default function UsersApp({ setIsLoggedIn }: UsersAppProps) {
     `;
 
     try {
-      const response = await axios.post(
-        process.env.REACT_APP_API_GATEWAY_URL ||
-          "http://localhost:4000/graphql",
-        { query: mutation },
-      );
+      const response = await axios.post(API_GATEWAY_URL, { query: mutation });
 
       if (response.data.errors) {
         setError(response.data.errors[0].message);
@@ -127,11 +131,7 @@ export default function UsersApp({ setIsLoggedIn }: UsersAppProps) {
     `;
 
     try {
-      const response = await axios.post(
-        process.env.REACT_APP_API_GATEWAY_URL ||
-          "http://localhost:4000/graphql",
-        { query: mutation },
-      );
+      const response = await axios.post(API_GATEWAY_URL, { query: mutation });
 
       if (response.data.errors) {
         setError(response.data.errors[0].message);
